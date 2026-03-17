@@ -6,6 +6,7 @@ from typing import Iterable, List
 from urllib.parse import quote_plus, urljoin
 
 from bs4 import BeautifulSoup
+import httpx
 
 from scraper.amazon.client import AmazonClient
 from scraper.amazon.parser import parse_product_detail
@@ -29,7 +30,16 @@ async def _fetch_search_result_urls(
     """
     encoded = quote_plus(keyword)
     search_url = f"https://www.amazon.co.jp/s?k={encoded}"
-    html = await client.fetch_html(search_url)
+
+    try:
+        html = await client.fetch_html(search_url)
+    except httpx.HTTPStatusError as exc:
+        # 503などで弾かれた場合は、そのキーワードをスキップ
+        print(f"[WARN] failed to fetch search results for {keyword}: {exc}")
+        return []
+    except httpx.RequestError as exc:
+        print(f"[WARN] request error for {keyword}: {exc}")
+        return []
     soup = BeautifulSoup(html, "lxml")
 
     urls: list[str] = []
@@ -69,7 +79,11 @@ async def run_amazon_scraping() -> list[Product]:
             all_urls.extend((u, kw) for u in urls)
 
         for url, kw in all_urls:
-            html = await client.fetch_html(url)
+            try:
+                html = await client.fetch_html(url)
+            except (httpx.HTTPStatusError, httpx.RequestError) as exc:
+                print(f"[WARN] failed to fetch product page {url}: {exc}")
+                continue
             product = parse_product_detail(html, url=url, category=kw)
             products.append(product)
     finally:
