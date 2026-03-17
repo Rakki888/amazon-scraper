@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>Amazon スクレイピング ダッシュボード</title>
+</head>
+<body>
+  <h1>Amazon 最新データ</h1>
+
+  <form method="post" action="/api/run/amazon">
+    <button type="submit">Amazonを今すぐ実行</button>
+  </form>
+
+  <p><a href="/files">ファイル一覧を見る</a></p>
+
+  <table border="1" cellpadding="4" cellspacing="0">
+    <thead>
+      <tr>
+        <th>商品名</th>
+        <th>価格</th>
+        <th>在庫</th>
+        <th>評価</th>
+        <th>レビュー数</th>
+        <th>ASIN</th>
+        <th>URL</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for p in products %}
+      <tr>
+        <td>{{ p.name }}</td>
+        <td>{{ p.price_raw or p.price }}</td>
+        <td>{{ p.stock }}</td>
+        <td>{{ p.rating }}</td>
+        <td>{{ p.review_count }}</td>
+        <td>{{ p.asin }}</td>
+        <td>
+          {% if p.url %}
+          <a href="{{ p.url }}" target="_blank" rel="noopener noreferrer">リンク</a>
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>
+

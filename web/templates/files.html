@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>Amazon データファイル一覧</title>
+</head>
+<body>
+  <h1>Amazon データファイル一覧</h1>
+
+  <p><a href="/">ダッシュボードに戻る</a></p>
+
+  <h2>JSON</h2>
+  <ul>
+    {% for f in json_files %}
+    <li>
+      <a href="/download?path={{ f }}">{{ f.name }}</a>
+    </li>
+    {% endfor %}
+  </ul>
+
+  <h2>CSV</h2>
+  <ul>
+    {% for f in csv_files %}
+    <li>
+      <a href="/download?path={{ f }}">{{ f.name }}</a>
+    </li>
+    {% endfor %}
+  </ul>
+</body>
+</html>
+
