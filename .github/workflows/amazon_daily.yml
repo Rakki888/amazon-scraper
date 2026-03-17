@@ -24,7 +24,7 @@ jobs:
 
       - name: Run daily amazon job
         run: |
-          python jobs/daily_amazon.py
+          python -m jobs.daily_amazon
 
       - name: Commit and push
         run: |
